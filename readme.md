@@ -6,6 +6,7 @@
 
 🎯 Register services in the **Startup.cs**.
 
+```c#
     public void ConfigureServices(IServiceCollection services)
     {
         // ......
@@ -17,33 +18,63 @@
         
         // ......
     }
+```
 
 🎯 Register authorization services in the **Startup.cs**.
 
-public void ConfigureServices(IServiceCollection services)
-{
-
-    // ......
-
-    services.AddControllers()
-            // FriendlyJwt authorization services registration below
-            .AddFriendlyJwtAuthentication(configuration =>
-            {
-                configuration.Audience = "someaudience.com";
-                configuration.Issuer = "someissuer";
-                configuration.Secret = "SecretYGPV8XC6bPJhQCUBV2LtDSharp";
-            });
-            
-    // ......
-}
+```c#
+    public void ConfigureServices(IServiceCollection services)
+    {
+    
+        // ......
+    
+        services.AddControllers()
+                // FriendlyJwt authorization services registration below
+                .AddFriendlyJwtAuthentication(configuration =>
+                {
+                    configuration.Audience = "someaudience.com";
+                    configuration.Issuer = "someissuer";
+                    configuration.Secret = "SecretYGPV8XC6bPJhQCUBV2LtDSharp";
+                });
+                
+        // ......
+    }
+```
 
 💡**Audience** and **Issuer** are optional. If values not provided, then validation will be disabled.
 
 💡 Method has the second parameter (**postSetupDelegate**), that allows to perform post configuration for authentication.
 
+⚠️⚠️ Ensure that **UseAuthentication** and **UseAuthorization** was called in **Startup.cs**.
+
+
+```c#
+    // ......
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+    app.UseRouting();
+    
+    app.UseAuthentication(); // <--
+    app.UseAuthorization(); // <--
+    
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+        endpoints.MapGet("/healthcheck", async context =>
+        { 
+            await context.Response.WriteAsync($"Healthy! [{DateTime.Now}]");
+        });
+    });
+
+    // ......
+```
+
+---
+
 ### How to create token
 You can find the example below:
-
+```c#
     TimeSpan lifeTime = TimeSpan.FromMinutes(1);
     string secret = "SecretYGPV8XC6bPJhQCUBV2LtDSharp";
 
@@ -56,7 +87,7 @@ You can find the example below:
             .WithPayloadData("time_zone", "Mid-Atlantic Standard Time")
             .WithPayloadData("custom_key", "some custom value")
             .Build();
-
+```
 Builder will return the **GeneratedTokenInfo** object that will contain the token and related information like expiration date and token identifier (jti).
 
 💡 In case if you does not want to use GUID based token id (jti) you can use custom, just use the method **.WithCustomTokenId("your_value")**.
@@ -67,13 +98,16 @@ Builder will return the **GeneratedTokenInfo** object that will contain the toke
 ### How to read the token payload values
 🎯 Inject **IJwtTokenReader** service via constructor:
 
+```c#
     public SomeService(IJwtTokenReader jwtTokenReader, .....)
     {
        //......
     }
+```
 
 Now you can use different methods and properties to access the payload data:
 
+```c#
     //......
     
     // will return true if user authenticated
@@ -101,18 +135,25 @@ Now you can use different methods and properties to access the payload data:
     (string Key, string Value)[] allValues = _jwtTokenReader.GetPayloadData();
 
     //......
+```
+
+---
 
 ### How to validate the issued token (refresh token approach)
 🎯 Inject **IJwtTokenVerifier** service via constructor:
 
+```c#
     public SomeService(IJwtTokenVerifier jwtTokenVerifier, .....)
     {
        //......
     }
+```
 
 🎯 Call the verification method:
 
+```c#
     JwtVerificationResult verificationResult =_jwtTokenVerifier.Verify(refreshTokenDto.Token);
+```
 
 JwtVerificationResult will contain the **IsValid** property  and retrieved **TokenId** and **UserId**.
 
