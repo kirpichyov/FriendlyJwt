@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageVersion>1.0.0</PackageVersion>
+        <Title>Kirpichyov.FriendlyJwt</Title>
+        <Authors>Alexandr Kirpichyov</Authors>
+        <Copyright>Kirpichyov</Copyright>
+        <PackageTags>Kirpichyov; FriendlyJwt;</PackageTags>
+        <Description>Custom JWT services wrapper.</Description>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIconUrl>https://cdn-icons-png.flaticon.com/512/3170/3170748.png</PackageIconUrl>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DocumentationFile />
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Constants" />
+      <Folder Include="Contracts" />
+      <Folder Include="DependencyInjection" />
+      <Folder Include="RefreshTokenUtilities" />
+    </ItemGroup>
+    
+</Project>
