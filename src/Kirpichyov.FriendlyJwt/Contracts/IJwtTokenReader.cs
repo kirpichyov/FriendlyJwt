@@ -25,6 +25,12 @@ namespace Kirpichyov.FriendlyJwt.Contracts
         public string UserEmail { get; }
         
         /// <summary>
+        /// Retrieves the user roles using the default key <see cref="PayloadDataKeys.UserRole"/>.
+        /// If key is not present, property will contain the empty array.
+        /// </summary>
+        public string[] UserRoles { get; }
+        
+        /// <summary>
         /// Allows to retrieve the value from payload section.
         /// </summary>
         /// <param name="key">Data key.</param>
@@ -36,6 +42,16 @@ namespace Kirpichyov.FriendlyJwt.Contracts
         ///     In case if user is not authenticated.
         /// </exception>
         public string GetPayloadValue(string key);
+        
+        /// <summary>
+        /// Allows to retrieve the all values from payload section.
+        /// </summary>
+        /// <param name="key">Data key.</param>
+        /// <returns>Data values if key is present, otherwise - empty array.</returns>
+        /// <exception cref="System.InvalidOperationException">
+        ///     In case if user is not authenticated.
+        /// </exception>
+        public string[] GetPayloadValues(string key);
         
         /// <summary>
         /// Allows to retrieve the value from payload section.

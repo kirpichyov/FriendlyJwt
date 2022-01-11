@@ -82,6 +82,7 @@ You can find the example below:
         new JwtTokenBuilder(lifeTime, secret)
             .WithIssuer("someissuer")
             .WithAudience("someaudience")
+            .WithUserRolesPayloadData(new[] { "admin", "supervisor" });
             .WithUserIdPayloadData("13567")
             .WithUserEmailPayloadData("usermail@example.com")
             .WithPayloadData("time_zone", "Mid-Atlantic Standard Time")
@@ -114,22 +115,29 @@ Now you can use different methods and properties to access the payload data:
     bool isLogged = _jwtTokenReader.IsLoggedIn;
 
     // will retrieve the email if default key was used (via WithUserEmailPayloadData() method)
-    string email = _jwtTokenReader.UserEmail;
+    string userEmail = _jwtTokenReader.UserEmail;
 
     // will retrieve the user id if default key was used (via WithUserIdPayloadData() method)
     string userId = _jwtTokenReader.UserId;
+    
+    // will retrieve the user roles if default key was used (via WithUserRolesPayloadData() method)
+    string[] userRoles = _jwtTokenReader.UserRoles;
 
     // will retrieve the value via key passed to indexer
-    // will throw exception if value is not present
+    // will throw exception if key is not present
     string someValue = _jwtTokenReader["my_key"];
 
     // will retrieve the value via key passed to method
-    // will throw exception if value is not present
+    // will throw exception if key is not present
     string someOtherValue = _jwtTokenReader.GetPayloadValue("my_key");
 
     // will retrieve the value via key passed to method
-    // will return null if value is not present
+    // will return null if key is not present
     string someVeryOtherValue = _jwtTokenReader.GetPayloadValueOrDefault("my_key");
+
+    // will retrieve the all values for passed key
+    // will return empty array if key is not present
+    string[] someManyValues = _jwtTokenReader.GetPayloadValues("my_shared_key");
 
     // will return the all payload entries
     (string Key, string Value)[] allValues = _jwtTokenReader.GetPayloadData();

@@ -138,6 +138,34 @@ namespace Kirpichyov.FriendlyJwt
             _claims.Add(new Claim(PayloadDataKeys.UserEmail, email));
             return this;
         }
+
+        /// <summary>
+        /// Adds the value for <see cref="PayloadDataKeys.UserRole"/> key to payload section.
+        /// </summary>
+        /// <param name="role">Value.</param>
+        /// <returns>Builder.</returns>
+        public JwtTokenBuilder WithUserRolePayloadData(string role)
+        {
+            ValidateStringAndThrow(role, "Role", nameof(role));
+            
+            _claims.Add(new Claim(PayloadDataKeys.UserRole, role));
+            return this;
+        }
+        
+        /// <summary>
+        /// Adds the values for <see cref="PayloadDataKeys.UserRole"/> key to payload section.
+        /// </summary>
+        /// <param name="roles">Values.</param>
+        /// <returns>Builder.</returns>
+        public JwtTokenBuilder WithUserRolesPayloadData(params string[] roles)
+        {
+            foreach (string role in roles)
+            {
+                WithUserRolePayloadData(role);
+            }
+            
+            return this;
+        }
         
         /// <summary>
         /// Builds the JWT token.

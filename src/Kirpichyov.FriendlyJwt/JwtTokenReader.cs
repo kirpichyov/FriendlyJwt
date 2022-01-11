@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Kirpichyov.FriendlyJwt
 {
-    public sealed class JwtTokenReader : IJwtTokenReader
+    public class JwtTokenReader : IJwtTokenReader
     {
         /// <inheritdoc/>
         public bool IsLoggedIn { get; }
@@ -18,6 +18,9 @@ namespace Kirpichyov.FriendlyJwt
         
         /// <inheritdoc/>
         public string UserEmail { get; }
+
+        /// <inheritdoc/>
+        public string[] UserRoles { get; }
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         
@@ -41,6 +44,10 @@ namespace Kirpichyov.FriendlyJwt
             
             UserId = GetPayloadValueOrDefault(PayloadDataKeys.UserId);
             UserEmail = GetPayloadValueOrDefault(PayloadDataKeys.UserEmail);
+            
+            UserRoles = httpContext.User.FindAll(PayloadDataKeys.UserRole)
+                                        .Select(roleClaim => roleClaim.Value)
+                                        .ToArray();
         }
 
         /// <inheritdoc/>
@@ -57,15 +64,23 @@ namespace Kirpichyov.FriendlyJwt
         }
 
         /// <inheritdoc/>
+        public string[] GetPayloadValues(string key)
+        {
+            ValidateIfLoggedInAndThrow();
+
+            return _httpContextAccessor.HttpContext.User.Claims
+                .Where(claim => claim.Type == key)
+                .Select(claim => claim.Value)
+                .ToArray();
+        }
+
+        /// <inheritdoc/>
         public string GetPayloadValueOrDefault(string key) => RetrieveClaimOrDefault(key)?.Value;
 
         /// <inheritdoc/>
         public (string Key, string Value)[] GetPayloadData()
         {
-            if (!IsLoggedIn)
-            {
-                throw new InvalidOperationException("User must be logged in to perform payload reading.");
-            }
+            ValidateIfLoggedInAndThrow();
 
             return _httpContextAccessor.HttpContext.User.Claims
                 .Select(claim => (claim.Type, claim.Value))
@@ -77,12 +92,17 @@ namespace Kirpichyov.FriendlyJwt
 
         private Claim RetrieveClaimOrDefault(string key)
         {
+            ValidateIfLoggedInAndThrow();
+
+            return _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == key);
+        }
+
+        private void ValidateIfLoggedInAndThrow()
+        {
             if (!IsLoggedIn)
             {
                 throw new InvalidOperationException("User must be logged in to perform payload reading.");
             }
-
-            return _httpContextAccessor.HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == key);
         }
     }
 }
