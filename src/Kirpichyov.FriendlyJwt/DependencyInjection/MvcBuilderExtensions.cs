@@ -31,14 +31,15 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                 ClockSkew = TimeSpan.Zero
             };
 
-            if (authConfiguration.HasIssuer)
+            tokenValidationParameters.ValidateIssuer = authConfiguration.HasIssuer;
+            if (tokenValidationParameters.ValidateIssuer)
             {
-                tokenValidationParameters.ValidateIssuer = true;
                 tokenValidationParameters.ValidIssuer = authConfiguration.Issuer;
             }
-            if (authConfiguration.HasAudience)
+
+            tokenValidationParameters.ValidateAudience = authConfiguration.HasAudience;
+            if (tokenValidationParameters.ValidateAudience)
             {
-                tokenValidationParameters.ValidateAudience = true;
                 tokenValidationParameters.ValidAudience = authConfiguration.Audience;
             }
 

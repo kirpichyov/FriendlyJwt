@@ -180,6 +180,10 @@ namespace Kirpichyov.FriendlyJwt
             {
                 _claims.Add(new Claim(PayloadDataKeys.TokenId, jti));   
             }
+            else
+            {
+                jti = _claims.First(claim => claim.Type == PayloadDataKeys.TokenId).Value;
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             

@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>1.0.1</PackageVersion>
+        <PackageVersion>1.0.2</PackageVersion>
         <Title>Kirpichyov.FriendlyJwt</Title>
         <Authors>Alexandr Kirpichyov</Authors>
         <Copyright>Kirpichyov</Copyright>
@@ -12,12 +12,11 @@
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIconUrl>https://cdn-icons-png.flaticon.com/512/3170/3170748.png</PackageIconUrl>
-        <AssemblyVersion>1.0.1</AssemblyVersion>
-        <FileVersion>1.0.1</FileVersion>
+        <AssemblyVersion>1.0.2</AssemblyVersion>
+        <FileVersion>1.0.2</FileVersion>
         <PackageProjectUrl>https://github.com/kirpichyov/FriendlyJwt</PackageProjectUrl>
         <RepositoryUrl>https://github.com/kirpichyov/FriendlyJwt</RepositoryUrl>
-        <PackageReleaseNotes>- Added UserRoles default key and builder method
-- Added mulptiple values retrieving feature</PackageReleaseNotes>
+        <PackageReleaseNotes>- Fixed found bugs</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>

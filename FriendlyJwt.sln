@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kirpichyov.FriendlyJwt", "src\Kirpichyov.FriendlyJwt\Kirpichyov.FriendlyJwt.csproj", "{FAEC248E-81E6-4532-B399-2D629B7101B3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5791A244-14C6-4042-A57E-4BF189BC0887}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kirpichyov.FriendlyJwt.UnitTests", "src\Kirpichyov.FriendlyJwt.UnitTests\Kirpichyov.FriendlyJwt.UnitTests.csproj", "{5C81F374-3937-4760-9304-833768BBB816}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,12 @@ Global
 		{FAEC248E-81E6-4532-B399-2D629B7101B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAEC248E-81E6-4532-B399-2D629B7101B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAEC248E-81E6-4532-B399-2D629B7101B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C81F374-3937-4760-9304-833768BBB816}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C81F374-3937-4760-9304-833768BBB816}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C81F374-3937-4760-9304-833768BBB816}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C81F374-3937-4760-9304-833768BBB816}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5C81F374-3937-4760-9304-833768BBB816} = {5791A244-14C6-4042-A57E-4BF189BC0887}
 	EndGlobalSection
 EndGlobal
