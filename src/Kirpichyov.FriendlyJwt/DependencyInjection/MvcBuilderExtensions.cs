@@ -27,7 +27,7 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                 ValidateIssuerSigningKey = true,
                 RequireExpirationTime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(authConfiguration.Secret)),
-                ValidAlgorithms = new[] { TokenValidation.HmacSha256 },
+                ValidAlgorithms = new[] { authConfiguration.SecurityAlgorithm },
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -57,6 +57,8 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                     options.RequireHttpsMetadata = authConfiguration.RequireHttpsMetadata;
                     options.SaveToken = true;
                     options.TokenValidationParameters = tokenValidationParameters;
+                    options.TokenValidationParameters.RoleClaimType = PayloadDataKeys.UserRole;
+                    options.TokenValidationParameters.NameClaimType = PayloadDataKeys.UserName;
                 });
 
             return mvcBuilder;
@@ -67,6 +69,11 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
             if (string.IsNullOrWhiteSpace(authConfiguration.Secret))
             {
                 throw new ArgumentException("Secret can't be null or empty.", nameof(authConfiguration.Secret));
+            }
+
+            if (string.IsNullOrWhiteSpace(authConfiguration.SecurityAlgorithm))
+            {
+                throw new ArgumentException("Security algorithm can't be null or empty.");
             }
         }
     }

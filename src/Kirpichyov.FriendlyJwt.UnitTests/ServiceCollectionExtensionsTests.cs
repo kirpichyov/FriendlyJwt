@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Kirpichyov.FriendlyJwt.Contracts;
@@ -9,6 +10,7 @@ using Xunit;
 
 namespace Kirpichyov.FriendlyJwt.UnitTests
 {
+    [ExcludeFromCodeCoverage]
     public class ServiceCollectionExtensionsTests
     {
         [Fact]

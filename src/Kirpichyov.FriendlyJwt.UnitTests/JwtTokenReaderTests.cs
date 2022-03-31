@@ -6,8 +6,10 @@ using System.Security.Claims;
 using Bogus;
 using FakeItEasy;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Kirpichyov.FriendlyJwt.Constants;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace Kirpichyov.FriendlyJwt.UnitTests
@@ -16,12 +18,19 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
     public class JwtTokenReaderTests
     {
         private readonly Fake<IHttpContextAccessor> _httpContextAccessorFake;
+        private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly Faker _faker;
         
         public JwtTokenReaderTests()
         {
             _httpContextAccessorFake = new Fake<IHttpContextAccessor>();
             _faker = new Faker();
+
+            _tokenValidationParameters = new TokenValidationParameters
+            {
+                NameClaimType = PayloadDataKeys.UserName,
+                RoleClaimType = PayloadDataKeys.UserRole
+            };
         }
 
         [Fact]
@@ -31,10 +40,15 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             _httpContextAccessorFake.CallsTo(accessor => accessor.HttpContext)
                                     .Returns(null);
 
-            var sut = new JwtTokenReader(_httpContextAccessorFake.FakedObject);
+            var sut = new JwtTokenReader(_httpContextAccessorFake.FakedObject, new TokenValidationParameters());
 
             // Assert
-            sut.IsLoggedIn.Should().BeFalse();
+            using (new AssertionScope())
+            {
+                sut.IsLoggedIn.Should().BeFalse();
+                _httpContextAccessorFake.CallsTo(accessor => accessor.HttpContext)
+                                        .MustHaveHappenedOnceExactly();
+            }
         }
         
         [Fact]
@@ -82,7 +96,31 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             // Assert
             sut.UserId.Should().BeNull();
         }
+
+        [Fact]
+        public void UserName_HttpContextProvidedAndUserHasUserEmailClaim_ShouldBeEqualExpected()
+        {
+            // Arrange
+            string userName = _faker.Internet.UserName();
+            
+            JwtTokenReader sut = BuildSut((PayloadDataKeys.UserName, userName));
+
+            // Assert
+            sut.UserName.Should().Be(userName);
+        }
         
+        [Fact]
+        public void UserName_HttpContextProvidedAndUserHasNoUserNameClaim_ShouldBeNull()
+        {
+            // Arrange
+            string userId = _faker.Random.Guid().ToString();
+
+            JwtTokenReader sut = BuildLoggedSut();
+
+            // Assert
+            sut.UserName.Should().BeNull();
+        }
+
         [Fact]
         public void UserEmail_HttpContextProvidedAndUserHasUserEmailClaim_ShouldBeEqualExpected()
         {
@@ -271,7 +309,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             _httpContextAccessorFake.CallsTo(accessor => accessor.HttpContext)
                                     .Returns(httpContext);
 
-            return new JwtTokenReader(_httpContextAccessorFake.FakedObject);
+            return new JwtTokenReader(_httpContextAccessorFake.FakedObject, _tokenValidationParameters);
         }
 
         private JwtTokenReader BuildLoggedSut() => BuildSut(("some_key", "some_value"));

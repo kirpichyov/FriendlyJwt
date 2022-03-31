@@ -26,7 +26,7 @@
     }
 ```
 
-🎯 Register authorization services in the **Startup.cs**.
+🎯 Register authentication handlers in the **Startup.cs**.
 
 ```c#
     public void ConfigureServices(IServiceCollection services)

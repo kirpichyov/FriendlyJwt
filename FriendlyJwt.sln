@@ -6,6 +6,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5791A244
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kirpichyov.FriendlyJwt.UnitTests", "src\Kirpichyov.FriendlyJwt.UnitTests\Kirpichyov.FriendlyJwt.UnitTests.csproj", "{5C81F374-3937-4760-9304-833768BBB816}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kirpichyov.FriendlyJwt.IntegrationsTests", "src\Kirpichyov.FriendlyJwt.IntegrationsTests\Kirpichyov.FriendlyJwt.IntegrationsTests.csproj", "{A3FDB0F3-C27C-47E3-AAFB-1D6BA316E26F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +22,13 @@ Global
 		{5C81F374-3937-4760-9304-833768BBB816}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C81F374-3937-4760-9304-833768BBB816}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C81F374-3937-4760-9304-833768BBB816}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3FDB0F3-C27C-47E3-AAFB-1D6BA316E26F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3FDB0F3-C27C-47E3-AAFB-1D6BA316E26F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3FDB0F3-C27C-47E3-AAFB-1D6BA316E26F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3FDB0F3-C27C-47E3-AAFB-1D6BA316E26F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5C81F374-3937-4760-9304-833768BBB816} = {5791A244-14C6-4042-A57E-4BF189BC0887}
+		{A3FDB0F3-C27C-47E3-AAFB-1D6BA316E26F} = {5791A244-14C6-4042-A57E-4BF189BC0887}
 	EndGlobalSection
 EndGlobal

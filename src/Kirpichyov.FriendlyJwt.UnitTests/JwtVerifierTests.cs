@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Kirpichyov.FriendlyJwt.Constants;
 using Kirpichyov.FriendlyJwt.RefreshTokenUtilities;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
@@ -33,7 +32,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 ValidateAudience = !string.IsNullOrEmpty(audience),
                 ValidateIssuer = !string.IsNullOrEmpty(issuer),
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret)),
-                ValidAlgorithms = new[] { TokenValidation.HmacSha256 },
+                ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256 },
                 ClockSkew = TimeSpan.Zero
             };
 
@@ -57,6 +56,78 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 result.IsValid.Should().Be(isValid);
                 result.TokenId.Should().Be(isValid ? tokenId : null);
                 result.UserId.Should().Be(isValid ? userId : null);
+            }
+        }
+        
+        [Fact]
+        public void Verify_TokenWithInvalidSignatureProvided_JwtVerificationResultValuesShouldBeEqualExpected()
+        {
+            string token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTgzYTFlOS1mNDg5LTRiYzUtYmQ2Yi0zYTIxOTQ4" +
+                           "NzI5MGUiLCJuYmYiOjE2NDg2NjgzMzYsImV4cCI6MTY0ODY3MTkzNiwiaWF0IjoxNjQ4NjY4MzM2LCJpc3MiOiJmc" +
+                           "mllbmRseS1qd3QuY29tIiwiYXVkIjoidGVzdC1hdWRpZW5jZS5jb20ifQ.GHTCPHnNJ6xm6CVZt56JSjsLBOPWRxs" +
+                           "IVp5zJ6xqKNYCSLdx3GsyE99AzQWkP9ut";
+            
+            string secret = "5t14b251pd4z3nh0mf3323j4ohry0zkj";
+            
+            // Arrange
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                RequireExpirationTime = true,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret)),
+                ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256Signature },
+                ClockSkew = TimeSpan.Zero,
+            };
+
+            var sut = new JwtTokenVerifier(tokenValidationParameters);
+
+            // Act
+            JwtVerificationResult result = sut.Verify(token);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                result.IsValid.Should().BeFalse();
+                result.TokenId.Should().BeNull();
+                result.UserId.Should().BeNull();
+            }
+        }
+        
+        [Fact]
+        public void Verify_TokenWithValidSignatureProvided_JwtVerificationResultValuesShouldBeEqualExpected()
+        {
+            string token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTgzYTFlOS1mNDg5LTRiYzUtYmQ2Yi0zYTIxOTQ4" +
+                           "NzI5MGUiLCJuYmYiOjE2NDg2NjgzMzYsImV4cCI6MTY0ODY3MTkzNiwiaWF0IjoxNjQ4NjY4MzM2LCJpc3MiOiJmc" +
+                           "mllbmRseS1qd3QuY29tIiwiYXVkIjoidGVzdC1hdWRpZW5jZS5jb20ifQ.GHTCPHnNJ6xm6CVZt56JSjsLBOPWRxs" +
+                           "IVp5zJ6xqKNYCSLdx3GsyE99AzQWkP9ut";
+            
+            string secret = "5t14b251pd4z3nh0mf3323j4ohry0zkj";
+            
+            // Arrange
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                RequireExpirationTime = true,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secret)),
+                ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha384 },
+                ClockSkew = TimeSpan.Zero,
+            };
+
+            var sut = new JwtTokenVerifier(tokenValidationParameters);
+
+            // Act
+            JwtVerificationResult result = sut.Verify(token);
+
+            // Assert
+            using (new AssertionScope())
+            {
+                result.IsValid.Should().BeTrue();
+                result.TokenId.Should().NotBeNullOrEmpty();
+                result.UserId.Should().BeNull();
             }
         }
         
