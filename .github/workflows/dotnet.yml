@@ -31,6 +31,12 @@ jobs:
         /p:CollectCoverage=true
         /p:CoverletOutput=TestResults/
         /p:CoverletOutputFormat=lcov
+        
+    - name: Run Integration tests
+      run: dotnet test src/Kirpichyov.FriendlyJwt.IntegrationsTests/Kirpichyov.FriendlyJwt.IntegrationsTests.csproj --verbosity normal
+        /p:CollectCoverage=true
+        /p:CoverletOutput=TestResults/
+        /p:CoverletOutputFormat=lcov
 
     - name: Publish coverage report to coveralls.io   
       uses: coverallsapp/github-action@master   
