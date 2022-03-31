@@ -2,7 +2,7 @@
 
 ![main workflow](https://github.com/kirpichyov/FriendlyJwt/actions/workflows/dotnet.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/kirpichyov/FriendlyJwt/badge.svg?branch=main)](https://coveralls.io/github/kirpichyov/FriendlyJwt?branch=main)
-[![NuGet](http://img.shields.io/nuget/vpre/Kirpichyov.FriendlyJwt.svg?version=1&label=NuGet)](https://www.nuget.org/packages/Kirpichyov.FriendlyJwt/)
+[![NuGet](http://img.shields.io/nuget/vpre/Kirpichyov.FriendlyJwt.svg?version=2&label=NuGet)](https://www.nuget.org/packages/Kirpichyov.FriendlyJwt/)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
 **FriendlyJwt** is the custom JWT token authentication services wrapper library for ASP.NET Core 5.0.
