@@ -6,6 +6,7 @@ using Bogus;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Kirpichyov.FriendlyJwt.Constants;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace Kirpichyov.FriendlyJwt.UnitTests
@@ -15,8 +16,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
     {
         private const int SecretLength = 32;
         private const string LifeTimeComparisonPattern = "yyyy-dd-MM hh:mm";
-        private const string UserRoleKey = "role";
-        
+
         private readonly Faker _faker;
         
         public JwtTokenBuilderTests()
@@ -167,6 +167,62 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         }
 
         [Fact]
+        public void WithSecurityAlgorithmAndBuild_ValidAlgorithmProvided_ShouldNotThrowAnyException()
+        {
+            // Arrange
+            string algorithm = SecurityAlgorithms.HmacSha512Signature;
+            
+            // Act
+            Func<GeneratedTokenInfo> func = () => BuildSut().WithSecurityAlgorithm(algorithm).Build();
+            
+            // Assert
+            using (new AssertionScope())
+            {
+                func.Should().NotThrow();
+            }
+        }
+        
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void WithSecurityAlgorithmAndBuild_InvalidAlgorithmProvided_ShouldThrowArgumentException(string algorithm)
+        {
+            // Act
+            Func<GeneratedTokenInfo> func = () => BuildSut().WithSecurityAlgorithm(algorithm).Build();
+            
+            // Assert
+            func.Should().ThrowExactly<ArgumentException>();
+        }
+        
+        [Fact]
+        public void WithUserNameAlgorithmAndBuild_ValidAlgorithmProvided_ShouldNotThrowAnyException()
+        {
+            // Arrange
+            string userName = _faker.Person.UserName;
+            
+            // Act
+            Func<GeneratedTokenInfo> func = () => BuildSut().WithUserName(userName).Build();
+            
+            // Assert
+            using (new AssertionScope())
+            {
+                func.Should().NotThrow();
+            }
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void WithUserNameAlgorithmAndBuild_InvalidAlgorithmProvided_ShouldThrowArgumentException(string userName)
+        {
+            // Act
+            Func<GeneratedTokenInfo> func = () => BuildSut().WithUserName(userName).Build();
+            
+            // Assert
+            func.Should().ThrowExactly<ArgumentException>();
+        }
+
+        [Fact]
         public void WithPayloadData_CustomJtiPayloadDataWasProvided_ShouldNotOverwriteTokenId()
         {
             // Arrange
@@ -253,7 +309,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             var handler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtSecurityToken = handler.ReadJwtToken(result.Token);
 
-            jwtSecurityToken.Claims.Should().Contain(claim => claim.Type == UserRoleKey &&
+            jwtSecurityToken.Claims.Should().Contain(claim => claim.Type == PayloadDataKeys.UserRole &&
                                                               claim.Value == role);
         }
         
@@ -276,7 +332,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             var handler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtSecurityToken = handler.ReadJwtToken(result.Token);
 
-            jwtSecurityToken.Claims.Where(claim => claim.Type == UserRoleKey)
+            jwtSecurityToken.Claims.Where(claim => claim.Type == PayloadDataKeys.UserRole)
                                    .Select(claim => claim.Value)
                                    .Should().BeEquivalentTo(expected);
         }
@@ -296,7 +352,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             var handler = new JwtSecurityTokenHandler();
             JwtSecurityToken jwtSecurityToken = handler.ReadJwtToken(result.Token);
 
-            jwtSecurityToken.Claims.Where(claim => claim.Type == UserRoleKey)
+            jwtSecurityToken.Claims.Where(claim => claim.Type == PayloadDataKeys.UserRole)
                                    .Select(claim => claim.Value)
                                    .Should().BeEquivalentTo(expected);
         }

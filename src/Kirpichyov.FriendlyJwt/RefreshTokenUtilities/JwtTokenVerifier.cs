@@ -1,5 +1,4 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using Kirpichyov.FriendlyJwt.Constants;
@@ -27,35 +26,22 @@ namespace Kirpichyov.FriendlyJwt.RefreshTokenUtilities
 
             try
             {
-                ClaimsPrincipal principal =
-                    tokenHandler.ValidateToken(token, validationParameters, out SecurityToken securityToken);
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken _);
                 
-                if (ValidateJwtSecurityAlgorithm(securityToken))
+                string tokenId = principal.Claims.Single(claim => claim.Type == (tokenIdPayloadKey ?? PayloadDataKeys.TokenId)).Value;
+                string userId = principal.Claims.FirstOrDefault(claim => claim.Type == (userIdPayloadKey ?? PayloadDataKeys.UserId))?.Value;
+
+                return new JwtVerificationResult
                 {
-                    string tokenId = principal.Claims.Single(claim => claim.Type == (tokenIdPayloadKey ?? PayloadDataKeys.TokenId)).Value;
-                    string userId = principal.Claims.Single(claim => claim.Type == (userIdPayloadKey ?? PayloadDataKeys.UserId)).Value;
-                    
-                    return new JwtVerificationResult
-                    {
-                        IsValid = true,
-                        TokenId = tokenId,
-                        UserId = userId
-                    };
-                }
+                    IsValid = true,
+                    TokenId = tokenId,
+                    UserId = userId
+                };
             }
             catch
             {
                 return InvalidResult();
             }
-
-            return InvalidResult();
-        }
-
-        private static bool ValidateJwtSecurityAlgorithm(SecurityToken token)
-        {
-            return token is JwtSecurityToken jwtSecurityToken &&
-                   jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                       StringComparison.InvariantCultureIgnoreCase);
         }
 
         private static JwtVerificationResult InvalidResult()

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Bogus;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Kirpichyov.FriendlyJwt.Constants;
 using Kirpichyov.FriendlyJwt.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +11,7 @@ using Xunit;
 
 namespace Kirpichyov.FriendlyJwt.UnitTests
 {
+    [ExcludeFromCodeCoverage]
     public class MvcBuilderExtensionsTests
     {
         private readonly Faker _faker;
@@ -30,7 +30,10 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 Secret = _faker.Random.AlphaNumeric(32),
                 Audience = _faker.Internet.Url(),
                 Issuer = _faker.Internet.Url(),
-                RequireHttpsMetadata = _faker.Random.Bool()
+                RequireHttpsMetadata = _faker.Random.Bool(),
+                SecurityAlgorithm = _faker.PickRandom(SecurityAlgorithms.HmacSha256Signature, 
+                                                      SecurityAlgorithms.HmacSha384Signature, 
+                                                      SecurityAlgorithms.HmacSha512Signature)
             };
             
             var services = new ServiceCollection();
@@ -41,6 +44,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 configuration.Audience = expectedConfiguration.Audience;
                 configuration.Issuer = expectedConfiguration.Issuer;
                 configuration.RequireHttpsMetadata = expectedConfiguration.RequireHttpsMetadata;
+                configuration.SecurityAlgorithm = expectedConfiguration.SecurityAlgorithm;
             }
             
             // Act
@@ -56,7 +60,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                         ValidateIssuerSigningKey = true,
                         RequireExpirationTime = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(expectedConfiguration.Secret)),
-                        ValidAlgorithms = new[] { TokenValidation.HmacSha256 },
+                        ValidAlgorithms = new[] { expectedConfiguration.SecurityAlgorithm },
                         ClockSkew = TimeSpan.Zero,
                         ValidateIssuer = expectedConfiguration.HasIssuer,
                         ValidateAudience = expectedConfiguration.HasAudience,
@@ -80,6 +84,31 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             void SetupDelegate(JwtAuthConfiguration configuration)
             {
                 configuration.Secret = expectedConfiguration.Secret;
+            }
+            
+            // Act
+            Func<IMvcBuilder> func = () => services.AddMvc().AddFriendlyJwtAuthentication(SetupDelegate);
+
+            // Assert
+            func.Should().ThrowExactly<ArgumentException>();
+        }
+
+        [Fact]
+        public void AddFriendlyJwtAuthentication_ConfigurationProvidedWithInvalidAlgorithm_ShouldThrowArgumentException()
+        {
+            // Arrange
+            var expectedConfiguration = new JwtAuthConfiguration()
+            {
+                Secret = _faker.Random.AlphaNumeric(32),
+                SecurityAlgorithm = string.Empty
+            };
+            
+            var services = new ServiceCollection();
+
+            void SetupDelegate(JwtAuthConfiguration configuration)
+            {
+                configuration.Secret = expectedConfiguration.Secret;
+                configuration.SecurityAlgorithm = expectedConfiguration.SecurityAlgorithm;
             }
             
             // Act

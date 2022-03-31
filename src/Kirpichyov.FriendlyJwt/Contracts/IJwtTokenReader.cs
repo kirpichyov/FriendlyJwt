@@ -25,6 +25,12 @@ namespace Kirpichyov.FriendlyJwt.Contracts
         public string UserEmail { get; }
         
         /// <summary>
+        /// Retrieves the user name using the default key <see cref="PayloadDataKeys.UserName"/>.
+        /// If key is not present, property will contain the null value.
+        /// </summary>
+        public string UserName { get; }
+        
+        /// <summary>
         /// Retrieves the user roles using the default key <see cref="PayloadDataKeys.UserRole"/>.
         /// If key is not present, property will contain the empty array.
         /// </summary>

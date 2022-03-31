@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Kirpichyov.FriendlyJwt.Constants;
 using Kirpichyov.FriendlyJwt.Contracts;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Kirpichyov.FriendlyJwt
 {
@@ -20,15 +21,19 @@ namespace Kirpichyov.FriendlyJwt
         public string UserEmail { get; }
 
         /// <inheritdoc/>
+        public string UserName { get; }
+
+        /// <inheritdoc/>
         public string[] UserRoles { get; }
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        
-        public JwtTokenReader(IHttpContextAccessor httpContextAccessor)
+
+        public JwtTokenReader(IHttpContextAccessor httpContextAccessor, 
+                              TokenValidationParameters tokenValidationParameters)
         {
             IsLoggedIn = false;
             
-            if (httpContextAccessor.HttpContext == null)
+            if (httpContextAccessor.HttpContext is null)
             {
                 return;
             }
@@ -41,11 +46,12 @@ namespace Kirpichyov.FriendlyJwt
             
             _httpContextAccessor = httpContextAccessor;
             IsLoggedIn = true;
-            
+
+            UserName = httpContext.User.FindFirst(tokenValidationParameters.NameClaimType)?.Value;
             UserId = GetPayloadValueOrDefault(PayloadDataKeys.UserId);
             UserEmail = GetPayloadValueOrDefault(PayloadDataKeys.UserEmail);
             
-            UserRoles = httpContext.User.FindAll(PayloadDataKeys.UserRole)
+            UserRoles = httpContext.User.FindAll(tokenValidationParameters.RoleClaimType)
                                         .Select(roleClaim => roleClaim.Value)
                                         .ToArray();
         }

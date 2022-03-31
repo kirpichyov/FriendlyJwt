@@ -20,6 +20,7 @@ namespace Kirpichyov.FriendlyJwt
         private string _customJti;
         private string _audience;
         private string _issuer;
+        private string _securityAlgorithm;
         
         /// <summary>
         /// Default constructor.
@@ -40,10 +41,11 @@ namespace Kirpichyov.FriendlyJwt
             _signatureSecretKey = signatureSecretKey;
             _customJti = null;
             _claims = new List<Claim>();
+            _securityAlgorithm = SecurityAlgorithms.HmacSha256Signature;
         }
 
         /// <summary>
-        /// Adds the audience validation.
+        /// Adds the audience.
         /// </summary>
         /// <param name="audience">Value.</param>
         /// <returns>Builder.</returns>
@@ -56,7 +58,7 @@ namespace Kirpichyov.FriendlyJwt
         }
         
         /// <summary>
-        /// Adds the issuer validation.
+        /// Adds the issuer.
         /// </summary>
         /// <param name="issuer">Value.</param>
         /// <returns>Builder.</returns>
@@ -81,6 +83,19 @@ namespace Kirpichyov.FriendlyJwt
             return this;
         }
 
+        /// <summary>
+        /// Adds the user name record to payload section.
+        /// </summary>
+        /// <param name="userName">User name.</param>
+        /// <returns>Builder.</returns>
+        public JwtTokenBuilder WithUserName(string userName)
+        {
+            ValidateStringAndThrow(userName, "User name", nameof(userName));
+            
+            _claims.Add(new Claim(PayloadDataKeys.UserName, userName));
+            return this;
+        }
+        
         /// <summary>
         /// Adds the data record to payload section.
         /// </summary>
@@ -166,6 +181,19 @@ namespace Kirpichyov.FriendlyJwt
             
             return this;
         }
+
+        /// <summary>
+        /// Sets the security algorithm.
+        /// </summary>
+        /// <param name="algorithm">Security algorithm.</param>
+        /// <returns>Builder.</returns>
+        public JwtTokenBuilder WithSecurityAlgorithm(string algorithm)
+        {
+            ValidateStringAndThrow(algorithm, "Security algorithm", nameof(algorithm));
+
+            _securityAlgorithm = algorithm;
+            return this;
+        }
         
         /// <summary>
         /// Builds the JWT token.
@@ -193,8 +221,7 @@ namespace Kirpichyov.FriendlyJwt
             {
                 Subject = new ClaimsIdentity(_claims.ToArray()),
                 Expires = expiresOn,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), 
-                    SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), _securityAlgorithm)
             };
 
             if (!string.IsNullOrEmpty(_audience))
