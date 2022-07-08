@@ -4,6 +4,7 @@ using System.Text;
 using Bogus;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using Kirpichyov.FriendlyJwt.Contracts;
 using Kirpichyov.FriendlyJwt.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -54,19 +55,20 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             // Assert
             using (new AssertionScope())
             {
-                provider.GetRequiredService<TokenValidationParameters>()
-                    .Should().BeEquivalentTo(new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        RequireExpirationTime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(expectedConfiguration.Secret)),
-                        ValidAlgorithms = new[] { expectedConfiguration.SecurityAlgorithm },
-                        ClockSkew = TimeSpan.Zero,
-                        ValidateIssuer = expectedConfiguration.HasIssuer,
-                        ValidateAudience = expectedConfiguration.HasAudience,
-                        ValidIssuer = expectedConfiguration.HasIssuer ? expectedConfiguration.Issuer : null,
-                        ValidAudience = expectedConfiguration.HasAudience ? expectedConfiguration.Audience : null
-                    });
+                var service = provider.GetRequiredService<ITokenValidationParametersProvider>();
+                service.Should().NotBeNull();
+                service.Value.Should().BeEquivalentTo(new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    RequireExpirationTime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(expectedConfiguration.Secret)),
+                    ValidAlgorithms = new[] { expectedConfiguration.SecurityAlgorithm },
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateIssuer = expectedConfiguration.HasIssuer,
+                    ValidateAudience = expectedConfiguration.HasAudience,
+                    ValidIssuer = expectedConfiguration.HasIssuer ? expectedConfiguration.Issuer : null,
+                    ValidAudience = expectedConfiguration.HasAudience ? expectedConfiguration.Audience : null
+                });
             }
         }
         

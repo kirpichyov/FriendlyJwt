@@ -11,9 +11,9 @@ namespace Kirpichyov.FriendlyJwt.RefreshTokenUtilities
     {
         private readonly TokenValidationParameters _tokenValidationParameters;
         
-        public JwtTokenVerifier(TokenValidationParameters tokenValidationParameters)
+        public JwtTokenVerifier(ITokenValidationParametersProvider parametersProvider)
         {
-            _tokenValidationParameters = tokenValidationParameters;
+            _tokenValidationParameters = parametersProvider.Value;
         }
 
         /// <inheritdoc/>

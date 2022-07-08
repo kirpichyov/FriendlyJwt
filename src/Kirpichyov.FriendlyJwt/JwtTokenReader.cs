@@ -5,7 +5,6 @@ using System.Security.Claims;
 using Kirpichyov.FriendlyJwt.Constants;
 using Kirpichyov.FriendlyJwt.Contracts;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Kirpichyov.FriendlyJwt
 {
@@ -29,7 +28,7 @@ namespace Kirpichyov.FriendlyJwt
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public JwtTokenReader(IHttpContextAccessor httpContextAccessor, 
-                              TokenValidationParameters tokenValidationParameters)
+                              ITokenValidationParametersProvider tokenValidationParameters)
         {
             IsLoggedIn = false;
             
@@ -47,11 +46,11 @@ namespace Kirpichyov.FriendlyJwt
             _httpContextAccessor = httpContextAccessor;
             IsLoggedIn = true;
 
-            UserName = httpContext.User.FindFirst(tokenValidationParameters.NameClaimType)?.Value;
+            UserName = httpContext.User.FindFirst(tokenValidationParameters.Value.NameClaimType)?.Value;
             UserId = GetPayloadValueOrDefault(PayloadDataKeys.UserId);
             UserEmail = GetPayloadValueOrDefault(PayloadDataKeys.UserEmail);
             
-            UserRoles = httpContext.User.FindAll(tokenValidationParameters.RoleClaimType)
+            UserRoles = httpContext.User.FindAll(tokenValidationParameters.Value.RoleClaimType)
                                         .Select(roleClaim => roleClaim.Value)
                                         .ToArray();
         }

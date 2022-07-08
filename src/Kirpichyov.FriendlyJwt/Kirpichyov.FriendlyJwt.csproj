@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.6-preview.1</PackageVersion>
         <Title>Kirpichyov.FriendlyJwt</Title>
         <Authors>Alexandr Kirpichyov</Authors>
         <Copyright>Kirpichyov</Copyright>
@@ -16,7 +16,7 @@
         <FileVersion>1.0.2</FileVersion>
         <PackageProjectUrl>https://github.com/kirpichyov/FriendlyJwt</PackageProjectUrl>
         <RepositoryUrl>https://github.com/kirpichyov/FriendlyJwt</RepositoryUrl>
-        <PackageReleaseNotes>- Extended ability to bind options for JwtAuthConfiguration</PackageReleaseNotes>
+        <PackageReleaseNotes>- Internal improvements</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>

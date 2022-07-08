@@ -45,7 +45,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 tokenValidationParameters.ValidIssuer = issuer;
             }
 
-            var sut = new JwtTokenVerifier(tokenValidationParameters);
+            var sut = new JwtTokenVerifier(new TokenValidationParametersProvider(tokenValidationParameters));
 
             // Act
             JwtVerificationResult result = sut.Verify(token);
@@ -81,7 +81,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 ClockSkew = TimeSpan.Zero,
             };
 
-            var sut = new JwtTokenVerifier(tokenValidationParameters);
+            var sut = new JwtTokenVerifier(new TokenValidationParametersProvider(tokenValidationParameters));
 
             // Act
             JwtVerificationResult result = sut.Verify(token);
@@ -117,7 +117,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 ClockSkew = TimeSpan.Zero,
             };
 
-            var sut = new JwtTokenVerifier(tokenValidationParameters);
+            var sut = new JwtTokenVerifier(new TokenValidationParametersProvider(tokenValidationParameters));
 
             // Act
             JwtVerificationResult result = sut.Verify(token);

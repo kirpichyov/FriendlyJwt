@@ -40,7 +40,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             _httpContextAccessorFake.CallsTo(accessor => accessor.HttpContext)
                                     .Returns(null);
 
-            var sut = new JwtTokenReader(_httpContextAccessorFake.FakedObject, new TokenValidationParameters());
+            var sut = new JwtTokenReader(_httpContextAccessorFake.FakedObject, new TokenValidationParametersProvider(new TokenValidationParameters()));
 
             // Assert
             using (new AssertionScope())
@@ -309,7 +309,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             _httpContextAccessorFake.CallsTo(accessor => accessor.HttpContext)
                                     .Returns(httpContext);
 
-            return new JwtTokenReader(_httpContextAccessorFake.FakedObject, _tokenValidationParameters);
+            return new JwtTokenReader(_httpContextAccessorFake.FakedObject, new TokenValidationParametersProvider(_tokenValidationParameters));
         }
 
         private JwtTokenReader BuildLoggedSut() => BuildSut(("some_key", "some_value"));

@@ -20,7 +20,7 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
         /// </summary>
         /// <param name="optionsObject">Object to obtain configuration from.</param>
         /// <exception cref="ArgumentNullException">In case if <paramref name="optionsObject"/> is null.</exception>
-        /// <remarks>The only public properties can be used for binding.</remarks>
+        /// <remarks>The only public properties with the same name can be used for binding.</remarks>
         public void Bind(object optionsObject)
         {
             BindInternal(this, optionsObject);
@@ -32,7 +32,7 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
         /// <param name="optionsObject">Object to obtain configuration from.</param>
         /// <returns>Created <see cref="JwtAuthConfiguration"/>.</returns>
         /// <exception cref="ArgumentNullException">In case if <paramref name="optionsObject"/> is null.</exception>
-        /// <remarks>The only public properties can be used for binding.</remarks>
+        /// <remarks>The only public properties with the same name can be used for binding.</remarks>
         public static JwtAuthConfiguration CreateFromOptionsObject(object optionsObject)
         {
             var jwtConfiguration = new JwtAuthConfiguration();

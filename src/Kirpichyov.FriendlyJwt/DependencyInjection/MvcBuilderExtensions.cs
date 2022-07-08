@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Kirpichyov.FriendlyJwt.Constants;
+using Kirpichyov.FriendlyJwt.Contracts;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -44,8 +45,10 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
             }
 
             postSetupDelegate?.Invoke(tokenValidationParameters);
-            mvcBuilder.Services.AddSingleton(tokenValidationParameters);
-            
+            mvcBuilder.Services.AddSingleton<ITokenValidationParametersProvider, TokenValidationParametersProvider>(
+                _ => new TokenValidationParametersProvider(tokenValidationParameters)
+            );
+
             mvcBuilder.Services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
