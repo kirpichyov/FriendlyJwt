@@ -19,12 +19,29 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
         /// Binds the options object to <see cref="JwtAuthConfiguration"/>.
         /// </summary>
         /// <param name="optionsObject">Object to obtain configuration from.</param>
-        /// <typeparam name="TOptions">Configuration source object type.</typeparam>
+        /// <exception cref="ArgumentNullException">In case if <paramref name="optionsObject"/> is null.</exception>
+        /// <remarks>The only public properties can be used for binding.</remarks>
+        public void Bind(object optionsObject)
+        {
+            BindInternal(this, optionsObject);
+        }
+        
+        /// <summary>
+        /// Creates the <see cref="JwtAuthConfiguration"/> from <paramref name="optionsObject"/>.
+        /// </summary>
+        /// <param name="optionsObject">Object to obtain configuration from.</param>
         /// <returns>Created <see cref="JwtAuthConfiguration"/>.</returns>
         /// <exception cref="ArgumentNullException">In case if <paramref name="optionsObject"/> is null.</exception>
         /// <remarks>The only public properties can be used for binding.</remarks>
-        public static JwtAuthConfiguration Bind<TOptions>(TOptions optionsObject)
-            where TOptions : class
+        public static JwtAuthConfiguration CreateFromOptionsObject(object optionsObject)
+        {
+            var jwtConfiguration = new JwtAuthConfiguration();
+            BindInternal(jwtConfiguration, optionsObject);
+
+            return jwtConfiguration;
+        }
+
+        private static void BindInternal(JwtAuthConfiguration jwtConfiguration, object optionsObject)
         {
             string GetCurrentValueAsString(PropertyInfo propertyInfo)
             {
@@ -59,7 +76,6 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
             }
             
             var getters = optionsObject.GetType().GetProperties();
-            var jwtConfiguration = new JwtAuthConfiguration();
 
             foreach (var propertyInfo in getters)
             {
@@ -82,8 +98,6 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                         break;
                 }
             }
-
-            return jwtConfiguration;
         }
     }
 }

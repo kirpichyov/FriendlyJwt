@@ -19,17 +19,17 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         }
 
         [Fact]
-        public void Bind_PassedConfigurationIsNull_ShouldThrowArgumentNullException()
+        public void CreateFromOptionsObject_PassedConfigurationIsNull_ShouldThrowArgumentNullException()
         {
             // Act
-            Action func = () => JwtAuthConfiguration.Bind<TestConfiguration1>(null);
+            Action func = () => JwtAuthConfiguration.CreateFromOptionsObject(null);
 
             // Assert
             func.Should().ThrowExactly<ArgumentNullException>();
         }
         
         [Fact]
-        public void Bind_ConfigurationWithAllPropertiesPassed_ShouldBeEquivalentToExpected()
+        public void CreateFromOptionsObject_ConfigurationWithAllPropertiesPassed_ShouldBeEquivalentToExpected()
         {
             // Arrange
             var configuration = new TestConfiguration1()
@@ -42,7 +42,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             };
             
             // Act
-            var result = JwtAuthConfiguration.Bind(configuration);
+            var result = JwtAuthConfiguration.CreateFromOptionsObject(configuration);
 
             // Assert
             result.Should().BeEquivalentTo(configuration);
@@ -55,7 +55,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         [InlineData("False", false)]
         [InlineData(null, false)]
         [InlineData("other", false)]
-        public void Bind_ConfigurationWithBoolAsStringPropertyPassed_ShouldBeEquivalentToExpected(string value, bool expected)
+        public void CreateFromOptionsObject_ConfigurationWithBoolAsStringPropertyPassed_ShouldBeEquivalentToExpected(string value, bool expected)
         {
             // Arrange
             var configuration = new TestConfiguration2()
@@ -64,10 +64,66 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             };
             
             // Act
-            var result = JwtAuthConfiguration.Bind(configuration);
+            var result = JwtAuthConfiguration.CreateFromOptionsObject(configuration);
 
             // Assert
             result.RequireHttpsMetadata.Should().Be(expected);
+        }
+        
+        [Fact]
+        public void Bind_PassedConfigurationIsNull_ShouldThrowArgumentNullException()
+        {
+            // Act
+            Action func = () => new JwtAuthConfiguration().Bind(null);
+
+            // Assert
+            func.Should().ThrowExactly<ArgumentNullException>();
+        }
+        
+        [Fact]
+        public void Bind_ConfigurationWithAllPropertiesPassed_ShouldBeEquivalentToExpected()
+        {
+            // Arrange
+            var objectToBind = new TestConfiguration1()
+            {
+                Issuer = _faker.Internet.Url(),
+                Audience = _faker.Internet.Url(),
+                Secret = _faker.Random.Guid().ToString(),
+                SecurityAlgorithm = SecurityAlgorithms.HmacSha256,
+                RequireHttpsMetadata = true
+            };
+
+            var configuration = new JwtAuthConfiguration();
+
+            // Act
+            configuration.Bind(objectToBind);
+
+            // Assert
+            configuration.Should().BeEquivalentTo(objectToBind);
+        }
+        
+        [Theory]
+        [InlineData("true", true)]
+        [InlineData("false", false)]
+        [InlineData("True", true)]
+        [InlineData("False", false)]
+        [InlineData(null, false)]
+        [InlineData("other", false)]
+        public void Bind_ConfigurationWithBoolAsStringPropertyPassed_ShouldBeEquivalentToExpected(string value, bool expected)
+        {
+            // Arrange
+            var objectToBind = new TestConfiguration2()
+            {
+                RequireHttpsMetadata = value
+            };
+            
+            var configuration = new JwtAuthConfiguration();
+
+            // Act
+            configuration.Bind(objectToBind);
+
+            // Assert
+            configuration.RequireHttpsMetadata.Should().Be(expected);
         }
 
         private record TestConfiguration1
