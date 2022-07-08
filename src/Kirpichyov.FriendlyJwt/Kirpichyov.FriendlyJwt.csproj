@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>1.0.3</PackageVersion>
+        <PackageVersion>1.0.4</PackageVersion>
         <Title>Kirpichyov.FriendlyJwt</Title>
         <Authors>Alexandr Kirpichyov</Authors>
         <Copyright>Kirpichyov</Copyright>
@@ -16,9 +16,7 @@
         <FileVersion>1.0.2</FileVersion>
         <PackageProjectUrl>https://github.com/kirpichyov/FriendlyJwt</PackageProjectUrl>
         <RepositoryUrl>https://github.com/kirpichyov/FriendlyJwt</RepositoryUrl>
-        <PackageReleaseNotes>- Added security algorithm support
-- Added UserName property to JwtTokenReader
-- Improved Roles value retrieve behavior</PackageReleaseNotes>
+        <PackageReleaseNotes>- Added ability to bind options for JwtAuthConfiguration</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
