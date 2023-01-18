@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>1.0.6-preview.1</PackageVersion>
+        <PackageVersion>1.0.7</PackageVersion>
         <Title>Kirpichyov.FriendlyJwt</Title>
         <Authors>Alexandr Kirpichyov</Authors>
         <Copyright>Kirpichyov</Copyright>
@@ -16,7 +16,7 @@
         <FileVersion>1.0.2</FileVersion>
         <PackageProjectUrl>https://github.com/kirpichyov/FriendlyJwt</PackageProjectUrl>
         <RepositoryUrl>https://github.com/kirpichyov/FriendlyJwt</RepositoryUrl>
-        <PackageReleaseNotes>- Internal improvements</PackageReleaseNotes>
+        <PackageReleaseNotes>- Extended post configuration parameters</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>

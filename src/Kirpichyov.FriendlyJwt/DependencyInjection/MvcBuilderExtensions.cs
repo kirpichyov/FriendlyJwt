@@ -2,6 +2,7 @@
 using System.Text;
 using Kirpichyov.FriendlyJwt.Constants;
 using Kirpichyov.FriendlyJwt.Contracts;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,9 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
         public static IMvcBuilder AddFriendlyJwtAuthentication(
             this IMvcBuilder mvcBuilder,
             Action<JwtAuthConfiguration> setupDelegate,
-            Action<TokenValidationParameters> postSetupDelegate = null)
+            Action<TokenValidationParameters> validationPostSetupDelegate = null,
+            Action<AuthenticationOptions> authPostSetupDelegate = null,
+            Action<JwtBearerOptions> jwtPostSetupDelegate = null)
         {
             var authConfiguration = new JwtAuthConfiguration();
             setupDelegate?.Invoke(authConfiguration);
@@ -44,7 +47,7 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                 tokenValidationParameters.ValidAudience = authConfiguration.Audience;
             }
 
-            postSetupDelegate?.Invoke(tokenValidationParameters);
+            validationPostSetupDelegate?.Invoke(tokenValidationParameters);
             mvcBuilder.Services.AddSingleton<ITokenValidationParametersProvider, TokenValidationParametersProvider>(
                 _ => new TokenValidationParametersProvider(tokenValidationParameters)
             );
@@ -54,6 +57,8 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    
+                    authPostSetupDelegate?.Invoke(options);
                 })
                 .AddJwtBearer(options =>
                 {
@@ -62,6 +67,8 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                     options.TokenValidationParameters = tokenValidationParameters;
                     options.TokenValidationParameters.RoleClaimType = PayloadDataKeys.UserRole;
                     options.TokenValidationParameters.NameClaimType = PayloadDataKeys.UserName;
+                    
+                    jwtPostSetupDelegate?.Invoke(options);
                 });
 
             return mvcBuilder;
