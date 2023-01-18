@@ -6,7 +6,10 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using Kirpichyov.FriendlyJwt.Contracts;
 using Kirpichyov.FriendlyJwt.DependencyInjection;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -26,17 +29,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         public void AddFriendlyJwtAuthentication_FullConfigurationProvided_TokenValidationParametersShouldBeRegistered()
         {
             // Arrange
-            var expectedConfiguration = new JwtAuthConfiguration()
-            {
-                Secret = _faker.Random.AlphaNumeric(32),
-                Audience = _faker.Internet.Url(),
-                Issuer = _faker.Internet.Url(),
-                RequireHttpsMetadata = _faker.Random.Bool(),
-                SecurityAlgorithm = _faker.PickRandom(SecurityAlgorithms.HmacSha256Signature, 
-                                                      SecurityAlgorithms.HmacSha384Signature, 
-                                                      SecurityAlgorithms.HmacSha512Signature)
-            };
-            
+            var expectedConfiguration = GetValidJwtAuthConfiguration();
             var services = new ServiceCollection();
 
             void SetupDelegate(JwtAuthConfiguration configuration)
@@ -69,6 +62,87 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                     ValidIssuer = expectedConfiguration.HasIssuer ? expectedConfiguration.Issuer : null,
                     ValidAudience = expectedConfiguration.HasAudience ? expectedConfiguration.Audience : null
                 });
+            }
+        }
+        
+        [Fact]
+        public void AddFriendlyJwtAuthentication_AuthPostSetupProvided_AuthenticationOptionsShouldBeEquivalentToExpected()
+        {
+            // Arrange
+            var jwtAuthConfiguration = GetValidJwtAuthConfiguration();
+            var expectedDefaultScheme = _faker.Lorem.Word();
+            
+            var services = new ServiceCollection();
+
+            void SetupDelegate(JwtAuthConfiguration configuration)
+            {
+                configuration.Secret = jwtAuthConfiguration.Secret;
+                configuration.Audience = jwtAuthConfiguration.Audience;
+                configuration.Issuer = jwtAuthConfiguration.Issuer;
+                configuration.RequireHttpsMetadata = jwtAuthConfiguration.RequireHttpsMetadata;
+                configuration.SecurityAlgorithm = jwtAuthConfiguration.SecurityAlgorithm;
+            }
+
+            void AuthPostSetupDelegate(AuthenticationOptions options)
+            {
+                options.RequireAuthenticatedSignIn = true;
+                options.DefaultScheme = expectedDefaultScheme;
+            }
+            
+            // Act
+            services.AddMvc().AddFriendlyJwtAuthentication(SetupDelegate, authPostSetupDelegate: AuthPostSetupDelegate);
+            var provider = services.BuildServiceProvider();
+
+            // Assert
+            using (new AssertionScope())
+            {
+                var options = provider.GetRequiredService<IOptions<AuthenticationOptions>>();
+                options.Should().NotBeNull();
+                options.Value.Should().NotBeNull();
+                options.Value.RequireAuthenticatedSignIn.Should().BeTrue();
+                options.Value.DefaultScheme.Should().Be(expectedDefaultScheme);
+            }
+        }
+
+        [Fact]
+        public void AddFriendlyJwtAuthentication_JwtPostSetupProvided_JwtBearerOptionsShouldBeEquivalentToExpected()
+        {
+            // Arrange
+            var jwtAuthConfiguration = GetValidJwtAuthConfiguration();
+            var expectedAuthorityConfiguration = $"https://{_faker.Internet.DomainName()}";
+            var expectedBackchannelTimeout = TimeSpan.FromSeconds(5);
+            
+            var services = new ServiceCollection();
+
+            void SetupDelegate(JwtAuthConfiguration configuration)
+            {
+                configuration.Secret = jwtAuthConfiguration.Secret;
+                configuration.Audience = jwtAuthConfiguration.Audience;
+                configuration.Issuer = jwtAuthConfiguration.Issuer;
+                configuration.RequireHttpsMetadata = jwtAuthConfiguration.RequireHttpsMetadata;
+                configuration.SecurityAlgorithm = jwtAuthConfiguration.SecurityAlgorithm;
+            }
+
+            void JwtBearerPostSetupDelegate(JwtBearerOptions options)
+            {
+                options.Authority = expectedAuthorityConfiguration;
+                options.BackchannelTimeout = expectedBackchannelTimeout;
+            }
+            
+            // Act
+            services.AddMvc().AddFriendlyJwtAuthentication(SetupDelegate, jwtPostSetupDelegate: JwtBearerPostSetupDelegate);
+            var provider = services.BuildServiceProvider();
+
+            // Assert
+            using (new AssertionScope())
+            {
+                var optionsSnapshot = provider.GetRequiredService<IOptionsSnapshot<JwtBearerOptions>>();
+                optionsSnapshot.Should().NotBeNull();
+
+                var options = optionsSnapshot.Get(JwtBearerDefaults.AuthenticationScheme);
+                options.Should().NotBeNull();
+                options.Authority.Should().Be(expectedAuthorityConfiguration);
+                options.BackchannelTimeout.Should().Be(expectedBackchannelTimeout);
             }
         }
         
@@ -118,6 +192,20 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
 
             // Assert
             func.Should().ThrowExactly<ArgumentException>();
+        }
+
+        private JwtAuthConfiguration GetValidJwtAuthConfiguration()
+        {
+            return new JwtAuthConfiguration()
+            {
+                Secret = _faker.Random.AlphaNumeric(32),
+                Audience = _faker.Internet.Url(),
+                Issuer = _faker.Internet.Url(),
+                RequireHttpsMetadata = _faker.Random.Bool(),
+                SecurityAlgorithm = _faker.PickRandom(SecurityAlgorithms.HmacSha256Signature, 
+                    SecurityAlgorithms.HmacSha384Signature, 
+                    SecurityAlgorithms.HmacSha512Signature)
+            };
         }
     }
 }
