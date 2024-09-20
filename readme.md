@@ -5,7 +5,7 @@
 [![NuGet](http://img.shields.io/nuget/vpre/Kirpichyov.FriendlyJwt.svg?version=6&label=NuGet)](https://www.nuget.org/packages/Kirpichyov.FriendlyJwt/)
 [![License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
 
-**FriendlyJwt** is the custom JWT token authentication services wrapper library for ASP.NET Core 5+.
+**FriendlyJwt** is the custom JWT token authentication services wrapper library for ASP.NET Core 5+ (old package version) and .NET 8+ (latest package version).
 
 ### Get started
 🎯 Download the [NuGet package](https://www.nuget.org/packages/Kirpichyov.FriendlyJwt/).

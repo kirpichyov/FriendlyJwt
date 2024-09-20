@@ -98,12 +98,11 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         [Fact]
         public void Verify_TokenWithValidSignatureProvided_JwtVerificationResultValuesShouldBeEqualExpected()
         {
-            string token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYTgzYTFlOS1mNDg5LTRiYzUtYmQ2Yi0zYTIxOTQ4" +
-                           "NzI5MGUiLCJuYmYiOjE2NDg2NjgzMzYsImV4cCI6MTY0ODY3MTkzNiwiaWF0IjoxNjQ4NjY4MzM2LCJpc3MiOiJmc" +
-                           "mllbmRseS1qd3QuY29tIiwiYXVkIjoidGVzdC1hdWRpZW5jZS5jb20ifQ.GHTCPHnNJ6xm6CVZt56JSjsLBOPWRxs" +
-                           "IVp5zJ6xqKNYCSLdx3GsyE99AzQWkP9ut";
-            
-            string secret = "5t14b251pd4z3nh0mf3323j4ohry0zkj";
+            var secret = "iSr7b6u83AxvcW8tre3J1K4daKvRF7YA1tA61kcyTDR9rfQ4f09tMVBi7gSNdXn7PB1Du74wDRCURHarT5nba3hTif1wNmZg04HQ";
+
+            var token = "eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9." +
+                        "eyJqdGkiOiJkMGY4N2QzNi1hZTAxLTQ1NzItYWI4Ny1iYjgzNDJlZTczZTciLCJuYmYiOjE3MjY4MjU1OTUsImV4cCI6MTcyNjgyNTg5NSwiaWF0IjoxNzI2ODI1NTk1fQ." +
+                        "KrYjf2xRPusE5e6pnBQqEUENSm95z0g8Y2jir6N3RiOarSr3_Ga-y4nUZfEo-xIS";
             
             // Arrange
             var tokenValidationParameters = new TokenValidationParameters

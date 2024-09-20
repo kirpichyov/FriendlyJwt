@@ -14,7 +14,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
     [ExcludeFromCodeCoverage]
     public class JwtTokenBuilderTests
     {
-        private const int SecretLength = 32;
+        private const int SecretLength = 64;
         private const string LifeTimeComparisonPattern = "yyyy-dd-MM hh:mm";
 
         private readonly Faker _faker;
@@ -43,7 +43,7 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         {
             // Arrange
             TimeSpan lifeTime = _faker.Date.Timespan();
-            string signatureSecretKey = _faker.Random.AlphaNumeric(SecretLength-1);
+            string signatureSecretKey = _faker.Random.AlphaNumeric(31);
             
             // Act
             Func<JwtTokenBuilder> func = () => new JwtTokenBuilder(lifeTime, signatureSecretKey);
