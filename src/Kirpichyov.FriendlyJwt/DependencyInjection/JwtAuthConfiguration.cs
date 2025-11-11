@@ -4,6 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Kirpichyov.FriendlyJwt.DependencyInjection
 {
+    /// <summary>
+    /// Configuration options for JWT authentication.
+    /// </summary>
     public class JwtAuthConfiguration
     {
         public string Issuer { get; set; }

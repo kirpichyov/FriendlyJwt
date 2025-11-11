@@ -95,6 +95,16 @@ namespace Kirpichyov.FriendlyJwt
         /// <inheritdoc/>
         public string this[string key] => GetPayloadValue(key);
 
+        public Guid GetUserIdAsUuid()
+        {
+            if (Guid.TryParse(UserId, out var userIdAsGuid))
+            {
+                return userIdAsGuid;
+            }
+            
+            throw new FormatException("User id is not in a valid GUID format. Actual value was: " + UserId);
+        }
+
         private Claim RetrieveClaimOrDefault(string key)
         {
             ValidateIfLoggedInAndThrow();

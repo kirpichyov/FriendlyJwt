@@ -66,6 +66,37 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         }
         
         [Fact]
+        public void AddFriendlyJwtAuthentication_FullConfigurationProvidedWithAuthBuilderPostAction_ShouldCallPostAction()
+        {
+            // Arrange
+            var expectedConfiguration = GetValidJwtAuthConfiguration();
+            var services = new ServiceCollection();
+
+            void SetupDelegate(JwtAuthConfiguration configuration)
+            {
+                configuration.Secret = expectedConfiguration.Secret;
+                configuration.Audience = expectedConfiguration.Audience;
+                configuration.Issuer = expectedConfiguration.Issuer;
+                configuration.RequireHttpsMetadata = expectedConfiguration.RequireHttpsMetadata;
+                configuration.SecurityAlgorithm = expectedConfiguration.SecurityAlgorithm;
+            }
+            
+            var postActionCalled = false;
+            
+            // Act
+            services.AddMvc().AddFriendlyJwtAuthentication(
+                SetupDelegate,
+                authBuilderPostSetupDelegate: builder =>
+                {
+                    builder.Should().NotBeNull();
+                    postActionCalled = true;
+                });
+            
+            // Assert
+            postActionCalled.Should().BeTrue();
+        }
+        
+        [Fact]
         public void AddFriendlyJwtAuthentication_AuthPostSetupProvided_AuthenticationOptionsShouldBeEquivalentToExpected()
         {
             // Arrange

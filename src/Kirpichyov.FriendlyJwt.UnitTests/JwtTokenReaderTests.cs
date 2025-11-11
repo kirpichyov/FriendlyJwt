@@ -98,6 +98,32 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
         }
 
         [Fact]
+        public void GetUserIdAsUuid_HttpContextProvidedAndUserHasUserIdUuidClaim_ShouldBeEqualExpected()
+        {
+            // Arrange
+            string userId = _faker.Random.Guid().ToString();
+            
+            JwtTokenReader sut = BuildSut((PayloadDataKeys.UserId, userId));
+
+            // Assert
+            sut.GetUserIdAsUuid().Should().Be(userId);
+        }
+        
+        [Fact]
+        public void GetUserIdAsUuid_HttpContextProvidedAndUserHasUserIdIntClaim_ShouldThrowFormatException()
+        {
+            // Arrange
+            string userId = _faker.Random.Int().ToString();
+            
+            JwtTokenReader sut = BuildSut((PayloadDataKeys.UserId, userId));
+            
+            var func = () => sut.GetUserIdAsUuid();
+
+            // Assert
+            func.Should().Throw<FormatException>();
+        }
+        
+        [Fact]
         public void UserName_HttpContextProvidedAndUserHasUserEmailClaim_ShouldBeEqualExpected()
         {
             // Arrange

@@ -16,7 +16,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallAnonymousEndpoint_Unauthorized_ResponseCodeShouldBe200()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthController);
             
             // Act
@@ -32,7 +32,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_Unauthorized_ResponseCodeShouldBe401()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthController);
             
             // Act
@@ -48,7 +48,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_Authorized_ResponseCodeShouldBe200()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration();
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthController, authConfiguration);
@@ -66,7 +66,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_AuthorizedWithInvalidIssuer_ResponseCodeShouldBe401()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration()
             {
@@ -88,7 +88,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_AuthorizedWithInvalidAudience_ResponseCodeShouldBe401()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration()
             {
@@ -110,7 +110,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_AuthorizedWithInvalidSecret_ResponseCodeShouldBe401()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration()
             {
@@ -132,7 +132,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_AuthorizedWithExpiredToken_ResponseCodeShouldBe401()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration()
             {
@@ -156,7 +156,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedAdminEndpoint_Unauthorized_ResponseCodeShouldBe401()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthController);
             
             // Act
@@ -172,7 +172,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedAdminEndpoint_AuthorizedAsUser_ResponseCodeShouldBe403()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
             var authConfiguration = new AuthConfiguration(AuthConstants.Roles.User);
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthController, authConfiguration);
             
@@ -189,7 +189,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedAdminEndpoint_AuthorizedAsAdmin_ResponseCodeShouldBe200()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
             var authConfiguration = new AuthConfiguration(AuthConstants.Roles.Admin);
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthController, authConfiguration);
             

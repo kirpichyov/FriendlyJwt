@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Kirpichyov.FriendlyJwt.DependencyInjection
 {
+    /// <summary>
+    /// Extension methods for registering FriendlyJwt services in an <see cref="IServiceCollection"/>.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
