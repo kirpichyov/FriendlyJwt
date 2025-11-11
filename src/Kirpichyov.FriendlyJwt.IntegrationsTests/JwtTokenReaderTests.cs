@@ -23,7 +23,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
         public async Task CallProtectedEndpoint_AuthorizedWithMinimalClaims_ResponseShouldBeEquivalentToExpected()
         {
             // Arrange
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration();
             var flurlClient = GetFlurlClient(httpClient, ApiConstants.Controllers.AuthReaderController, authConfiguration);
@@ -51,7 +51,7 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests
                 Roles = new [] { AuthConstants.Roles.Admin, AuthConstants.Roles.User }
             };
             
-            using var httpClient = Server.CreateClient();
+            using var httpClient = GetHttpClient();
 
             var authConfiguration = new AuthConfiguration()
             {

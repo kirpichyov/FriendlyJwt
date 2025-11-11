@@ -3,25 +3,23 @@ using System.Linq;
 using System.Net.Http;
 using Flurl.Http;
 using Kirpichyov.FriendlyJwt.IntegrationsTests.Constants;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
 namespace Kirpichyov.FriendlyJwt.IntegrationsTests.Common
 {
-    public abstract class HttpTestBase
+    public abstract class HttpTestBase : IDisposable
     {
-        protected readonly TestServer Server;
+        private readonly IntegrationTestsWebApplicationFactory _factory;
 
         protected HttpTestBase()
         {
-            var webHostBuilder =
-                new WebHostBuilder()
-                    .UseEnvironment("Test")
-                    .UseStartup<TestStartup>();
-            
-            Server = new TestServer(webHostBuilder);
+            _factory = new IntegrationTestsWebApplicationFactory();
+        }
+        
+        protected HttpClient GetHttpClient()
+        {
+            return _factory.CreateClient();
         }
         
         protected IFlurlClient GetFlurlClient(HttpClient httpClient, string controller, AuthConfiguration authConfiguration = null)
@@ -82,6 +80,12 @@ namespace Kirpichyov.FriendlyJwt.IntegrationsTests.Common
             public AuthConfiguration()
             {
             }
+        }
+
+        public void Dispose()
+        {
+            _factory?.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

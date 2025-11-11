@@ -9,6 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Kirpichyov.FriendlyJwt.DependencyInjection
 {
+    /// <summary>
+    /// Extension methods for configuring JWT authentication in an <see cref="IMvcBuilder"/>.
+    /// </summary>
     public static class MvcBuilderExtensions
     {
         /// <summary>
@@ -19,7 +22,8 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
             Action<JwtAuthConfiguration> setupDelegate,
             Action<TokenValidationParameters> validationPostSetupDelegate = null,
             Action<AuthenticationOptions> authPostSetupDelegate = null,
-            Action<JwtBearerOptions> jwtPostSetupDelegate = null)
+            Action<JwtBearerOptions> jwtPostSetupDelegate = null,
+            Action<AuthenticationBuilder> authBuilderPostSetupDelegate = null)
         {
             var authConfiguration = new JwtAuthConfiguration();
             setupDelegate?.Invoke(authConfiguration);
@@ -52,7 +56,7 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                 _ => new TokenValidationParametersProvider(tokenValidationParameters)
             );
 
-            mvcBuilder.Services.AddAuthentication(options =>
+            var authBuilder = mvcBuilder.Services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -70,6 +74,8 @@ namespace Kirpichyov.FriendlyJwt.DependencyInjection
                     
                     jwtPostSetupDelegate?.Invoke(options);
                 });
+            
+            authBuilderPostSetupDelegate?.Invoke(authBuilder);
 
             return mvcBuilder;
         }

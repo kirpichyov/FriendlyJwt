@@ -1,4 +1,5 @@
-﻿using Kirpichyov.FriendlyJwt.Constants;
+﻿using System;
+using Kirpichyov.FriendlyJwt.Constants;
 
 namespace Kirpichyov.FriendlyJwt.Contracts
 {
@@ -86,5 +87,14 @@ namespace Kirpichyov.FriendlyJwt.Contracts
         ///     In case if user is not authenticated.
         /// </exception>
         public string this[string key] { get; }
+        
+        /// <summary>
+        /// Retrieves the user id as <see cref="System.Guid"/> using the default key <see cref="PayloadDataKeys.UserId"/>.
+        /// </summary>
+        /// <returns>User id as <see cref="System.Guid"/>.</returns>
+        /// <exception cref="FormatException">
+        ///     In case if user id is not in a valid GUID format.
+        /// </exception>
+        public Guid GetUserIdAsUuid();
     }
 }

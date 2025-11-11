@@ -21,6 +21,8 @@ namespace Kirpichyov.FriendlyJwt
         private string _audience;
         private string _issuer;
         private string _securityAlgorithm;
+        private Action<JwtSecurityTokenHandler> _postJwtSecurityTokenHandlerAction;
+        private Action<SecurityTokenDescriptor> _postSecurityTokenDescriptorAction;
         
         /// <summary>
         /// Default constructor.
@@ -196,13 +198,37 @@ namespace Kirpichyov.FriendlyJwt
         }
         
         /// <summary>
+        /// Adds the action that will be executed after <see cref="JwtSecurityTokenHandler"/> creation.
+        /// </summary>
+        /// <param name="action">Action function.</param>
+        /// <returns>Builder.</returns>
+        public JwtTokenBuilder WithPostJwtSecurityTokenHandlerAction(Action<JwtSecurityTokenHandler> action)
+        {
+            ArgumentNullException.ThrowIfNull(action);
+            _postJwtSecurityTokenHandlerAction = action;
+            return this;
+        }
+        
+        /// <summary>
+        /// Adds the action that will be executed after <see cref="SecurityTokenDescriptor"/> creation.
+        /// </summary>
+        /// <param name="action">Action function.</param>
+        /// <returns>Builder.</returns>
+        public JwtTokenBuilder WithPostSecurityTokenDescriptorAction(Action<SecurityTokenDescriptor> action)
+        {
+            ArgumentNullException.ThrowIfNull(action);
+            _postSecurityTokenDescriptorAction = action;
+            return this;
+        }
+        
+        /// <summary>
         /// Builds the JWT token.
         /// </summary>
         /// <returns>Token with related information.</returns>
         public GeneratedTokenInfo Build()
         {
             string jti = _customJti ?? Guid.NewGuid().ToString();
-            DateTime expiresOn = DateTime.UtcNow.Add(_lifeTime);
+            DateTime expiresAtUtc = DateTime.UtcNow.Add(_lifeTime);
 
             if (_claims.All(claim => claim.Type != PayloadDataKeys.TokenId))
             {
@@ -220,8 +246,8 @@ namespace Kirpichyov.FriendlyJwt
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(_claims.ToArray()),
-                Expires = expiresOn,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), _securityAlgorithm)
+                Expires = expiresAtUtc,
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), _securityAlgorithm),
             };
 
             if (!string.IsNullOrEmpty(_audience))
@@ -233,6 +259,9 @@ namespace Kirpichyov.FriendlyJwt
                 tokenDescriptor.Issuer = _issuer;
             }
             
+            _postSecurityTokenDescriptorAction?.Invoke(tokenDescriptor);
+            _postJwtSecurityTokenHandlerAction?.Invoke(tokenHandler);
+            
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
 
             return new GeneratedTokenInfo
@@ -240,8 +269,12 @@ namespace Kirpichyov.FriendlyJwt
                 Token = tokenHandler.WriteToken(token),
                 Audience = _audience,
                 Issuer = _issuer,
-                ExpiresOn = expiresOn,
-                TokenId = jti
+#pragma warning disable CS0618 // Type or member is obsolete
+                ExpiresOn = expiresAtUtc,
+#pragma warning restore CS0618 // Type or member is obsolete
+                ExpiresAtUtc = expiresAtUtc,
+                TokenId = jti,
+                SecurityToken = token as JwtSecurityToken
             };
         }
 

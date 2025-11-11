@@ -8,6 +8,7 @@ using FluentAssertions.Execution;
 using Kirpichyov.FriendlyJwt.Constants;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
+#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace Kirpichyov.FriendlyJwt.UnitTests
 {
@@ -36,6 +37,62 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
             
             // Assert
             func.Should().NotThrow();
+        }
+        
+        [Fact]
+        public void TokenInfoSecurityToken_ValidLifetimeAndSignatureSecretKeyProvided_ShouldReturnSecurityToken()
+        {
+            // Arrange
+            TimeSpan lifeTime = _faker.Date.Timespan();
+            string signatureSecretKey = _faker.Random.AlphaNumeric(SecretLength);
+            
+            // Act
+            var tokenInfo = new JwtTokenBuilder(lifeTime, signatureSecretKey)
+                .WithIssuer("TestIssuer")
+                .WithAudience("TestAudience")
+                .WithSecurityAlgorithm(SecurityAlgorithms.HmacSha256)
+                .Build();
+            
+            // Assert
+            tokenInfo.SecurityToken.Should().NotBeNull();
+            tokenInfo.SecurityToken.Id.Should().NotBeEmpty();
+            tokenInfo.SecurityToken.Issuer.Should().NotBeEmpty();
+            tokenInfo.SecurityToken.Issuer.Should().NotBeEmpty();
+            tokenInfo.SecurityToken.ValidFrom.Should().BeBefore(DateTime.UtcNow);
+            tokenInfo.SecurityToken.ValidTo.Should().BeAfter(DateTime.UtcNow);
+            tokenInfo.SecurityToken.SigningCredentials.Should().NotBeNull();
+        }
+        
+        [Fact]
+        public void PostActions_ValidLifetimeAndSignatureSecretKeyProvided_ShouldReturnSecurityToken()
+        {
+            // Arrange
+            TimeSpan lifeTime = _faker.Date.Timespan();
+            string signatureSecretKey = _faker.Random.AlphaNumeric(SecretLength);
+            
+            // Act
+            var postJwtHandlerCalled = false;
+            var postDescriptorHandlerCalled = false;
+            
+            var tokenInfo = new JwtTokenBuilder(lifeTime, signatureSecretKey)
+                .WithIssuer("TestIssuer")
+                .WithAudience("TestAudience")
+                .WithSecurityAlgorithm(SecurityAlgorithms.HmacSha256)
+                .WithPostJwtSecurityTokenHandlerAction(handler =>
+                {
+                    handler.Should().NotBeNull();
+                    postJwtHandlerCalled = true;
+                })
+                .WithPostSecurityTokenDescriptorAction(handler =>
+                {
+                    handler.Should().NotBeNull();
+                    postDescriptorHandlerCalled = true;
+                })
+                .Build();
+            
+            // Assert
+            postJwtHandlerCalled.Should().BeTrue();
+            postDescriptorHandlerCalled.Should().BeTrue();
         }
         
         [Fact]
@@ -70,9 +127,13 @@ namespace Kirpichyov.FriendlyJwt.UnitTests
                 result.TokenId.Should().NotBeEmpty();
                 
                 result.ExpiresOn.ToUniversalTime().Should().Be(result.ExpiresOn);
+                result.ExpiresAtUtc.ToUniversalTime().Should().Be(result.ExpiresAtUtc);
                 
-                result.ExpiresOn.ToString(LifeTimeComparisonPattern)
+                result.ExpiresAtUtc.ToString(LifeTimeComparisonPattern)
                                 .Should().Be(expectedExpirationDate.ToString(LifeTimeComparisonPattern));
+                
+                result.ExpiresAtUtc.ToString(LifeTimeComparisonPattern)
+                    .Should().Be(expectedExpirationDate.ToString(LifeTimeComparisonPattern));
 
                 result.Token.Should().NotBeEmpty();
             }
